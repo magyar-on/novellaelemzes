@@ -3,334 +3,348 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Novellaelemzés Érettségi Segédanyag</title>
+    <title>Novellaelemzés Mesterkurzus</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     
-    <!-- Chosen Palette: Sophisticated Warm Neutrals. Background: Slate-50, Accents: Amber-600, Text: Slate-800, Secondary: Indigo-50. -->
+    <!-- Chosen Palette: Academic Navy & Gold. Background: Slate-50, Accents: Blue-900 (Professional), Gold: Amber-600 (Academic focus), Text: Slate-900. -->
     
     <!-- Application Structure Plan: 
-         Az alkalmazást öt fő tematikus blokkra osztottam: 
-         1. Stratégia (Hogyan kezdd el? - A vizsgafolyamat lépései),
-         2. Szerkezet (Az esszé felépítése: Bevezetés-Tárgyalás-Befejezés),
-         3. Elemzési Pillérek (Interaktív kártyák a legfontosabb szempontokhoz),
-         4. Fogalomtár (Szimbolika és narratológia),
-         5. Tiltólista (Gyakori hibák elkerülése). 
-         A navigáció fix menüvel történik, a vizualizáció pedig egy interaktív radar chart, amely segít megérteni az elemzési szempontok egyensúlyát. -->
+         Az információ-architektúra az érettségi vizsga kritikus szakaszait követi:
+         1. Stratégiai Tervezés (Workflow): Az első 15 perc teendői (kiemelés, vázlat).
+         2. Az Esszé Architektúrája: Hárompilléres szerkezet (OnlineTanulók-módszer) részletes bekezdés-bontással.
+         3. Elemzési Labor: Interaktív kártyák az Antalné-forrás 12 elemzési szempontjához.
+         4. Terminológiai Lexikon: A Mozaikos-forrás professzionális szakkifejezései.
+         5. "Tiltólista": A leggyakoribb pontlevonást okozó hibák gyűjteménye.
+         Vizualizáció: Dinamikus Radar Chart, amely a "leíró" és az "elemző" dolgozat közötti különbséget mutatja. -->
     
     <!-- Visualization & Content Choices: 
-         - Radar Chart: Az elemzés komplexitásának ábrázolására (nem elég csak a cselekmény).
-         - Tab-based navigation: A vizsgahelyzet lépéseinek bemutatására.
-         - Grid-based cards: A részletes szempontok (Idő, Tér, Szereplők) kifejtésére.
-         - Checklist: A "Mit ne tegyél" részhez. 
-         - Library: Chart.js (Canvas) a vizuális egyensúly szemléltetéséhez. -->
+         - Radar Chart (Chart.js): A tartalmi egyensúly szemléltetésére.
+         - Tab-based architecture: Az esszé felépítésének (Bevezetés, Tárgyalás, Befejezés) részletezésére.
+         - Interactive Grid: Az elemzési szempontokhoz.
+         - Styled Checklist: A "Ne tedd" szabályokhoz. 
+         - Library: Chart.js Canvas alapú grafikonhoz. -->
     
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        h1, h2 { font-family: 'Playfair Display', serif; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
+        .font-serif { font-family: 'Crimson Pro', serif; }
+        
         .chart-container {
             position: relative;
             width: 100%;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
+            max-width: 550px;
+            margin: auto;
             height: 350px;
-            max-height: 400px;
         }
-        .step-active { background-color: #fef3c7; border-color: #d97706; color: #92400e; }
-        .tab-btn.active { border-bottom: 2px solid #d97706; color: #d97706; }
-        .custom-shadow { box-shadow: 0 4px 20px -2px rgba(0,0,0,0.05); }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            border: 1px solid #e2e8f0;
+        }
+
+        .nav-link.active {
+            color: #1e3a8a;
+            border-bottom: 3px solid #d97706;
+        }
+
+        .step-card:hover {
+            transform: translateY(-4px);
+            border-color: #d97706;
+        }
+
+        .glossary-card:hover {
+            background-color: #fffbeb;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .animate-slide { animation: slideIn 0.5s ease-out forwards; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 leading-relaxed">
+<body class="selection:bg-amber-200">
 
-    <!-- Fix Navigáció -->
-    <nav class="sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-200 z-50">
-        <div class="max-w-6xl mx-auto px-4 flex justify-between items-center h-16">
-            <span class="font-bold text-lg text-slate-900">Novella<span class="text-amber-600">Pro</span></span>
-            <div class="hidden md:flex space-x-6 text-sm font-semibold uppercase tracking-wider">
-                <a href="#workflow" class="hover:text-amber-600 transition">Munkafolyamat</a>
-                <a href="#structure" class="hover:text-amber-600 transition">Szerkezet</a>
-                <a href="#pillars" class="hover:text-amber-600 transition">Szempontok</a>
-                <a href="#vocab" class="hover:text-amber-600 transition">Fogalmak</a>
+    <!-- Navigáció -->
+    <nav class="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-blue-900 rounded-lg flex items-center justify-center text-amber-500 font-bold text-xl shadow-lg">N</div>
+                <span class="font-extrabold text-xl tracking-tight text-blue-900">Novella<span class="text-amber-600">Pro</span></span>
             </div>
-            <button onclick="toggleMobileMenu()" class="md:hidden p-2 text-slate-600">☰</button>
-        </div>
-        <div id="mobileMenu" class="hidden bg-white border-b border-slate-200 px-4 py-4 space-y-3">
-            <a href="#workflow" class="block font-semibold">Munkafolyamat</a>
-            <a href="#structure" class="block font-semibold">Szerkezet</a>
-            <a href="#pillars" class="block font-semibold">Szempontok</a>
-            <a href="#vocab" class="block font-semibold">Fogalmak</a>
+            <div class="hidden lg:flex space-x-10 text-xs font-bold uppercase tracking-widest text-slate-500">
+                <a href="javascript:void(0)" onclick="showSection('prep')" class="nav-link active hover:text-blue-900 transition-all pb-1">Stratégia</a>
+                <a href="javascript:void(0)" onclick="showSection('structure')" class="nav-link hover:text-blue-900 transition-all pb-1">Szerkezet</a>
+                <a href="javascript:void(0)" onclick="showSection('deepdive')" class="nav-link hover:text-blue-900 transition-all pb-1">Labor</a>
+                <a href="javascript:void(0)" onclick="showSection('terms')" class="nav-link hover:text-blue-900 transition-all pb-1">Lexikon</a>
+            </div>
+            <div class="lg:hidden text-2xl text-blue-900">☰</div>
         </div>
     </nav>
 
-    <!-- Header -->
-    <header class="py-16 px-4 text-center bg-white border-b border-slate-100">
-        <div class="max-w-4xl mx-auto">
-            <h1 class="text-4xl md:text-5xl mb-4 text-slate-900">Novellaelemzés az Érettségin</h1>
-            <p class="text-lg text-slate-500 max-w-2xl mx-auto font-light">Mindentudó interaktív kalauz a sikeres magyar középszintű és emelt szintű vizsgához.</p>
-        </div>
-    </header>
+    <main class="max-w-7xl mx-auto px-4 py-8 lg:py-16">
+        
+        <!-- HERO / RADAR SECTION -->
+        <header class="mb-20 grid lg:grid-cols-2 gap-16 items-center">
+            <div class="space-y-8 text-center lg:text-left">
+                <div class="inline-block px-4 py-1.5 bg-blue-100 text-blue-900 rounded-full text-xs font-bold uppercase tracking-widest">Érettségi 2024/25</div>
+                <h1 class="text-5xl lg:text-7xl font-black text-slate-900 leading-[1.1]">
+                    Váltsd a cselekményt <span class="text-amber-600">pontokra.</span>
+                </h1>
+                <p class="text-xl text-slate-600 font-light leading-relaxed max-w-xl mx-auto lg:mx-0">
+                    A források alapján összeállított interaktív mesterkurzus. Tanuld meg az onlinetanulok.hu, Antalné és a Mozaikos-módszerek legjavát.
+                </p>
+                <div class="flex flex-wrap gap-4 justify-center lg:justify-start">
+                    <button onclick="showSection('deepdive')" class="px-8 py-4 bg-blue-900 text-white rounded-xl font-bold shadow-xl hover:bg-blue-800 transition">Elemzés kezdése</button>
+                    <button onclick="showSection('terms')" class="px-8 py-4 bg-white text-blue-900 border-2 border-blue-900 rounded-xl font-bold hover:bg-blue-50 transition">Fogalomtár</button>
+                </div>
+            </div>
+            <div class="glass-panel p-10 rounded-[2.5rem] shadow-2xl border border-white">
+                <h3 class="text-center font-bold mb-6 text-slate-400 uppercase text-xs tracking-widest">Elemzési Minőség: Leíró vs. Interpretatív</h3>
+                <div class="chart-container">
+                    <canvas id="qualityRadar"></canvas>
+                </div>
+                <p class="text-center text-[10px] text-slate-400 mt-6 italic font-serif">Kattints a "Stratégia" fázisaira az értékek változtatásához!</p>
+            </div>
+        </header>
 
-    <main class="max-w-6xl mx-auto px-4 py-12 space-y-24">
-
-        <!-- 1. SZEKCIÓ: A MUNKA FOLYAMATA -->
-        <section id="workflow" class="space-y-8">
-            <div class="text-center space-y-2">
-                <h2 class="text-3xl font-bold">Hogyan állj neki?</h2>
-                <p class="text-slate-500">A módszeres felkészülés a biztos siker kulcsa.</p>
+        <!-- STRATÉGIA SECTION -->
+        <section id="prep" class="section-content animate-slide">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
+                <div class="max-w-xl">
+                    <h2 class="text-4xl font-black text-blue-900 mb-2">Munkafolyamat</h2>
+                    <p class="text-slate-500 font-serif italic text-lg">Hogyan oszd be az idődet a vizsgán?</p>
+                </div>
+                <div class="px-6 py-2 bg-amber-600 text-white rounded-lg font-bold shadow-lg">90 perc javasolt</div>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="p-6 bg-white border border-slate-200 rounded-2xl custom-shadow hover:border-amber-400 transition cursor-pointer" onclick="updateChart('step1')">
-                    <div class="text-amber-600 font-bold text-xl mb-2">01</div>
-                    <h3 class="font-bold mb-2">Feladat és Olvasás</h3>
-                    <p class="text-xs text-slate-500 italic">Jelöld ki a kulcsszavakat, használd a színes tollakat már az első olvasásnál!</p>
+            <div class="grid md:grid-cols-4 gap-6">
+                <div onclick="updateRadar(90, 10)" class="step-card group bg-white p-8 rounded-3xl border border-slate-200 shadow-sm transition-all cursor-pointer">
+                    <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:bg-amber-100 transition">🎨</div>
+                    <h4 class="font-bold text-xl mb-3">1. Színes tollak</h4>
+                    <p class="text-sm text-slate-600 leading-relaxed font-serif italic">"Jelöljétek a szavakat, amelyek különleges jelentőséggel bírnak."</p>
                 </div>
-                <div class="p-6 bg-white border border-slate-200 rounded-2xl custom-shadow hover:border-amber-400 transition cursor-pointer" onclick="updateChart('step2')">
-                    <div class="text-amber-600 font-bold text-xl mb-2">02</div>
-                    <h3 class="font-bold mb-2">Gondolattérkép</h3>
-                    <p class="text-xs text-slate-500 italic">Rendszerezd az információkat: ki, mikor, hol, mit tesz és miért?</p>
+                <div onclick="updateRadar(60, 40)" class="step-card group bg-white p-8 rounded-3xl border border-slate-200 shadow-sm transition-all cursor-pointer">
+                    <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:bg-amber-100 transition">🧠</div>
+                    <h4 class="font-bold text-xl mb-3">2. Fő kérdés</h4>
+                    <p class="text-sm text-slate-600 leading-relaxed font-serif italic">"A feladatkiírás általában azonosítja a központi problémát."</p>
                 </div>
-                <div class="p-6 bg-white border border-slate-200 rounded-2xl custom-shadow hover:border-amber-400 transition cursor-pointer" onclick="updateChart('step3')">
-                    <div class="text-amber-600 font-bold text-xl mb-2">03</div>
-                    <h3 class="font-bold mb-2">Vázlatépítés</h3>
-                    <p class="text-xs text-slate-500 italic">Rendezd logikai sorrendbe a megfigyeléseidet. Tervezd meg a bekezdéseket!</p>
+                <div onclick="updateRadar(30, 80)" class="step-card group bg-white p-8 rounded-3xl border border-slate-200 shadow-sm transition-all cursor-pointer">
+                    <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:bg-amber-100 transition">📝</div>
+                    <h4 class="font-bold text-xl mb-3">3. Vázlat</h4>
+                    <p class="text-sm text-slate-600 leading-relaxed font-serif italic">"Rendezzétek logikus sorrendbe a megállapításokat oszlopokba."</p>
                 </div>
-                <div class="p-6 bg-white border border-slate-200 rounded-2xl custom-shadow hover:border-amber-400 transition cursor-pointer" onclick="updateChart('step4')">
-                    <div class="text-amber-600 font-bold text-xl mb-2">04</div>
-                    <h3 class="font-bold mb-2">Kidolgozás</h3>
-                    <p class="text-xs text-slate-500 italic">T/1. személy, szakkifejezések használata és bőséges bizonyítás idézetekkel.</p>
+                <div onclick="updateRadar(10, 100)" class="step-card group bg-white p-8 rounded-3xl border border-slate-200 shadow-sm transition-all cursor-pointer">
+                    <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:bg-amber-100 transition">📖</div>
+                    <h4 class="font-bold text-xl mb-3">4. Kidolgozás</h4>
+                    <p class="text-sm text-slate-600 leading-relaxed font-serif italic">"T/1. személy, igényes nyelvhasználat, bőséges bizonyítás."</p>
                 </div>
-            </div>
-
-            <!-- Interaktív Vizualizáció -->
-            <div class="bg-indigo-50 p-8 rounded-3xl flex flex-col items-center">
-                <h4 class="font-bold mb-6 text-indigo-900">Az elemzés egyensúlya: Ne csak a cselekményt írd le!</h4>
-                <div class="chart-container">
-                    <canvas id="balanceChart"></canvas>
-                </div>
-                <p id="chartStatus" class="mt-4 text-sm text-indigo-700 italic text-center">Kattints a fenti lépésekre a folyamat megértéséhez!</p>
             </div>
         </section>
 
-        <!-- 2. SZEKCIÓ: AZ ESSZÉ SZERKEZETE -->
-        <section id="structure" class="space-y-8">
-            <div class="text-center">
-                <h2 class="text-3xl font-bold">Az elemzés három pillére</h2>
-                <p class="text-slate-500">Milyen legyen az esszé felépítése?</p>
+        <!-- SZERKEZET SECTION (OnlineTanulók módszer) -->
+        <section id="structure" class="section-content hidden animate-slide">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-black text-blue-900 mb-4">Az Esszé Architektúrája</h2>
+                <p class="text-slate-500 font-serif italic text-lg max-w-2xl mx-auto">"A három szerkezeti egységnek: bevezetésnek, tárgyalásnak, befejezésnek meg kell jelennie."</p>
+            </div>
+            
+            <div class="flex flex-col lg:flex-row gap-10">
+                <div class="lg:w-1/3 space-y-4">
+                    <button onclick="setStruct(0)" id="sb-0" class="struct-tab w-full text-left p-6 rounded-2xl border-2 border-slate-200 hover:border-blue-900 transition-all font-bold text-lg flex items-center justify-between">
+                        I. Bevezetés <span class="text-slate-300">→</span>
+                    </button>
+                    <button onclick="setStruct(1)" id="sb-1" class="struct-tab w-full text-left p-6 rounded-2xl border-2 border-slate-200 hover:border-blue-900 transition-all font-bold text-lg flex items-center justify-between">
+                        II. Tárgyalás <span class="text-slate-300">→</span>
+                    </button>
+                    <button onclick="setStruct(2)" id="sb-2" class="struct-tab w-full text-left p-6 rounded-2xl border-2 border-slate-200 hover:border-blue-900 transition-all font-bold text-lg flex items-center justify-between">
+                        III. Befejezés <span class="text-slate-300">→</span>
+                    </button>
+                </div>
+                <div id="struct-display" class="lg:w-2/3 bg-white p-10 rounded-[2rem] border border-slate-200 shadow-2xl relative overflow-hidden">
+                    <!-- Dinamikus tartalom kerül ide -->
+                    <div class="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                        <span class="text-9xl font-black text-blue-900">01</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LABOR SECTION (Antalné szempontok) -->
+        <section id="deepdive" class="section-content hidden animate-slide">
+            <div class="flex items-center justify-between mb-16 border-b border-slate-200 pb-6">
+                <h2 class="text-4xl font-black text-blue-900">Elemzési Labor</h2>
+                <span class="text-sm font-bold text-slate-400 tracking-widest uppercase">Forrás: Antalné Szempontrendszer</span>
             </div>
 
-            <div class="flex flex-col lg:flex-row bg-white rounded-3xl overflow-hidden custom-shadow border border-slate-200">
-                <div class="lg:w-1/3 bg-slate-100 p-8 space-y-4">
-                    <button onclick="showTab('intro')" class="tab-btn active w-full text-left py-3 px-4 font-bold transition">Bevezetés (1 bekezdés)</button>
-                    <button onclick="showTab('body')" class="tab-btn w-full text-left py-3 px-4 font-bold transition">Tárgyalás (4-5 bekezdés)</button>
-                    <button onclick="showTab('conclusion')" class="tab-btn w-full text-left py-3 px-4 font-bold transition">Befejezés (1 bekezdés)</button>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg transition">
+                    <h5 class="text-amber-600 font-bold text-xs uppercase mb-3">Narratológia</h5>
+                    <h4 class="font-bold text-xl mb-4">Elbeszélői nézőpont</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed">"Mindentudó, korlátozott tudású vagy kívülálló? Azonosul-e valamely szereplővel?"</p>
                 </div>
-                <div class="lg:w-2/3 p-8 min-h-[300px]" id="tabContent">
-                    <!-- Dinamikus tartalom -->
-                    <div id="introContent">
-                        <h3 class="text-xl font-bold mb-4 text-amber-700 underline decoration-amber-200">Bevezetés: A kezdőrúgás</h3>
-                        <ul class="space-y-4 text-slate-700">
-                            <li>● <strong>Szerző és cím:</strong> Az első mondatban szerepeljenek!</li>
-                            <li>● <strong>Alapprobléma:</strong> Miről szól a mű? Mi a központi kérdés?</li>
-                            <li>● <strong>Korszak/Típus:</strong> Hol helyezkedik el az irodalomtörténetben?</li>
-                            <li>● <strong>Címértelmezés:</strong> Mire utal a cím? Metaforikus vagy konkrét?</li>
+                <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg transition">
+                    <h5 class="text-amber-600 font-bold text-xs uppercase mb-3">Tér-idő</h5>
+                    <h4 class="font-bold text-xl mb-4">Környezet & Idő</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed">"A helyszín szimbolikus jelentősége? Van-e bibliai vagy történelmi utalás?"</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg transition">
+                    <h5 class="text-amber-600 font-bold text-xs uppercase mb-3">Karakterek</h5>
+                    <h4 class="font-bold text-xl mb-4">Szereplők</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed">"Hány szereplő van? Motivációik, beszédmódjuk, belső változásaik?"</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg transition">
+                    <h5 class="text-amber-600 font-bold text-xs uppercase mb-3">Stilisztika</h5>
+                    <h4 class="font-bold text-xl mb-4">Nyelvi eszközök</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed">"Hangnem (ironikus, emelkedett), szókincs, mondatfűzés jellege?"</p>
+                </div>
+            </div>
+
+            <!-- Interaktív szempontok bővítve -->
+            <div class="mt-8 grid md:grid-cols-2 gap-8">
+                <div class="bg-blue-900 text-white p-10 rounded-[2.5rem] shadow-2xl">
+                    <h3 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">🚩</span> A Cím szerepe</h3>
+                    <p class="text-blue-100 leading-relaxed font-serif italic text-lg mb-6">"Változnak-e az előfeltevéseink az olvasás folyamán? Metaforikus vagy tárgyszerű?"</p>
+                    <div class="space-y-3">
+                        <div class="flex items-center text-sm bg-blue-800/50 p-3 rounded-xl">● Kulcsmotívumra utal?</div>
+                        <div class="flex items-center text-sm bg-blue-800/50 p-3 rounded-xl">● Konfliktust sejtet?</div>
+                        <div class="flex items-center text-sm bg-blue-800/50 p-3 rounded-xl">● Megoldást tartalmaz?</div>
+                    </div>
+                </div>
+                <div class="bg-amber-600 text-white p-10 rounded-[2.5rem] shadow-2xl">
+                    <h3 class="text-2xl font-bold mb-6 flex items-center"><span class="mr-3">⚡</span> Kompozíció</h3>
+                    <p class="text-amber-100 leading-relaxed font-serif italic text-lg mb-6">"Hogyan épül fel a feszültség? Van-e késleltetés vagy csattanó?"</p>
+                    <div class="grid grid-cols-2 gap-2 text-[10px] uppercase font-bold tracking-widest">
+                        <div class="p-3 bg-amber-700/50 rounded-lg">Expozíció</div>
+                        <div class="p-3 bg-amber-700/50 rounded-lg">Bonyodalom</div>
+                        <div class="p-3 bg-amber-700/50 rounded-lg">Tetőpont</div>
+                        <div class="p-3 bg-amber-700/50 rounded-lg">Zárlat</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LEXIKON SECTION (Mozaikos fogalmak) -->
+        <section id="terms" class="section-content hidden animate-slide">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-black text-blue-900 mb-2">Terminológiai Lexikon</h2>
+                <p class="text-slate-500">A pontos fogalmazásért és a pluszpontokért.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="glossary-card bg-white p-8 rounded-2xl border border-slate-200 transition-colors">
+                    <h4 class="text-amber-600 font-black text-xl mb-3 tracking-tighter">Szimbólum</h4>
+                    <p class="text-sm text-slate-600 leading-relaxed">"Valamilyen gondolati tartalom (eszme, érzés) érzéki jele. Pl. madár = lélek."</p>
+                </div>
+                <div class="glossary-card bg-white p-8 rounded-2xl border border-slate-200 transition-colors">
+                    <h4 class="text-amber-600 font-black text-xl mb-3 tracking-tighter">Motívum</h4>
+                    <p class="text-sm text-slate-600 leading-relaxed">"Többször felbukkanó nyelvi forma, értelemhordozó elem. Jelentése változhat."</p>
+                </div>
+                <div class="glossary-card bg-white p-8 rounded-2xl border border-slate-200 transition-colors">
+                    <h4 class="text-amber-600 font-black text-xl mb-3 tracking-tighter">Toposz</h4>
+                    <p class="text-sm text-slate-600 leading-relaxed">"Közismertté vált kép vagy cselekményelem. Pl. utazás = élet, ősz = öregedés."</p>
+                </div>
+                <div class="glossary-card bg-white p-8 rounded-2xl border border-slate-200 transition-colors">
+                    <h4 class="text-amber-600 font-black text-xl mb-3 tracking-tighter">Szabad függő beszéd</h4>
+                    <p class="text-sm text-slate-600 leading-relaxed">"Az E/3. személyű elbeszélő és a szereplő hangja észrevétlenül összemosódik."</p>
+                </div>
+                <div class="glossary-card bg-white p-8 rounded-2xl border border-slate-200 transition-colors">
+                    <h4 class="text-amber-600 font-black text-xl mb-3 tracking-tighter">Értékszerkezet</h4>
+                    <p class="text-sm text-slate-600 leading-relaxed">"A műben megjelenő értékek viszonyrendszere, hierarchiája, konfliktusa."</p>
+                </div>
+                <div class="glossary-card bg-white p-8 rounded-2xl border border-slate-200 transition-colors">
+                    <h4 class="text-amber-600 font-black text-xl mb-3 tracking-tighter">Belső monológ</h4>
+                    <p class="text-sm text-slate-600 leading-relaxed">"Valamelyik szereplő gondolatainak közvetlen bemutatása a szövegben."</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TILTÓLISTA SECTION (Kiemelt onlinetanulok tanácsok) -->
+        <section class="mt-32 max-w-5xl mx-auto bg-slate-900 text-white rounded-[3rem] p-12 lg:p-20 shadow-2xl relative overflow-hidden">
+            <div class="relative z-10">
+                <h2 class="text-4xl font-black mb-12 text-center">A HIBÁTLAN Dolgozat Titka 🛑</h2>
+                <div class="grid md:grid-cols-2 gap-12">
+                    <div class="space-y-6">
+                        <h4 class="text-amber-500 font-bold uppercase tracking-widest text-sm">Amit SOHA NE tegyél:</h4>
+                        <ul class="space-y-4">
+                            <li class="flex items-start bg-white/5 p-4 rounded-xl border border-white/10">
+                                <span class="text-red-500 font-bold mr-3">✖</span>
+                                <span class="text-sm"><strong>Ne írj életrajzot!</strong> "Ne írjatok életrajzot a szerzőről!" - csak ha a műhöz kell.</span>
+                            </li>
+                            <li class="flex items-start bg-white/5 p-4 rounded-xl border border-white/10">
+                                <span class="text-red-500 font-bold mr-3">✖</span>
+                                <span class="text-sm"><strong>Ne mesélj!</strong> "Ne meséljétek el a novella tartalmát!" - elemzést írj.</span>
+                            </li>
+                            <li class="flex items-start bg-white/5 p-4 rounded-xl border border-white/10">
+                                <span class="text-red-500 font-bold mr-3">✖</span>
+                                <span class="text-sm"><strong>Ne fecsegj!</strong> "Ne hosszú idézetekkel akarjátok növelni a terjedelmet!"</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="space-y-6">
+                        <h4 class="text-green-500 font-bold uppercase tracking-widest text-sm">A "Pontrabló" trükkök:</h4>
+                        <ul class="space-y-4">
+                            <li class="flex items-start bg-white/5 p-4 rounded-xl border border-white/10">
+                                <span class="text-green-500 font-bold mr-3">✓</span>
+                                <span class="text-sm"><strong>T/1. személy:</strong> "Ne tegyetek E/1. megállapításokat, használjatok T/1.-et!"</span>
+                            </li>
+                            <li class="flex items-start bg-white/5 p-4 rounded-xl border border-white/10">
+                                <span class="text-green-500 font-bold mr-3">✓</span>
+                                <span class="text-sm"><strong>Logikai kapcsolat:</strong> A bekezdések álljanak tartalmi viszonyban egymással.</span>
+                            </li>
+                            <li class="flex items-start bg-white/5 p-4 rounded-xl border border-white/10">
+                                <span class="text-green-500 font-bold mr-3">✓</span>
+                                <span class="text-sm"><strong>Szótár használat:</strong> "Helyesírási hibákat, egyeztetési hibákat is javítsátok!"</span>
+                            </li>
                         </ul>
                     </div>
                 </div>
             </div>
-        </section>
-
-        <!-- 3. SZEKCIÓ: ELEMZÉSI SZEMPONTOK GRID -->
-        <section id="pillars" class="space-y-8">
-            <div class="text-center">
-                <h2 class="text-3xl font-bold">Részletes elemzési szempontok</h2>
-                <p class="text-slate-500">Használj legalább hármat-négyet ezek közül az esszéd tárgyalásában!</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Szereplők -->
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 hover:shadow-lg transition">
-                    <h4 class="font-bold text-amber-600 mb-3 flex items-center">👤 Szereplők és jellemek</h4>
-                    <p class="text-sm text-slate-600 mb-4">Ne csak sorold fel őket! Nézd meg a motivációjukat, viszonyrendszerüket.</p>
-                    <div class="bg-slate-50 p-3 rounded-lg text-xs font-mono">
-                        Kérdések: Vannak-e beszélő nevek? Hogyan változnak a szereplők a zárlatig?
-                    </div>
-                </div>
-                <!-- Tér-Idő -->
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 hover:shadow-lg transition">
-                    <h4 class="font-bold text-amber-600 mb-3 flex items-center">⏳ Tér és Idő</h4>
-                    <p class="text-sm text-slate-600 mb-4">A helyszín szimbolikus is lehet (pl. zárt vs. nyitott tér). Az időrend lehet lineáris vagy visszatekintő.</p>
-                    <div class="bg-slate-50 p-3 rounded-lg text-xs font-mono">
-                        Kérdések: Van-e jelentősége az ünnepnapnak? Befolyásolja-e a táj a lélekállapotot?
-                    </div>
-                </div>
-                <!-- Narráció -->
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 hover:shadow-lg transition">
-                    <h4 class="font-bold text-amber-600 mb-3 flex items-center">🗣️ Elbeszélésmód</h4>
-                    <p class="text-sm text-slate-600 mb-4">Ki beszél? $E/1$ vagy $E/3$? Mindentudó vagy korlátozott tudású a narrátor?</p>
-                    <div class="bg-slate-50 p-3 rounded-lg text-xs font-mono">
-                        Szakkifejezés: Szabad függő beszéd (amikor az elbeszélő és a szereplő hangja összemosódik).
-                    </div>
-                </div>
-                <!-- Szerkezet -->
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 hover:shadow-lg transition">
-                    <h4 class="font-bold text-amber-600 mb-3 flex items-center">📐 Szerkezeti felépítés</h4>
-                    <p class="text-sm text-slate-600 mb-4">Drámai szerkesztés: expozíció, bonyodalom, tetőpont, megoldás.</p>
-                    <div class="bg-slate-50 p-3 rounded-lg text-xs font-mono">
-                        Extra: Figyelj a késleltetésre és a csattanóra a novella végén!
-                    </div>
-                </div>
-                <!-- Stílus -->
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 hover:shadow-lg transition">
-                    <h4 class="font-bold text-amber-600 mb-3 flex items-center">🖋️ Nyelvezet és Stílus</h4>
-                    <p class="text-sm text-slate-600 mb-4">Választékos, tájnyelvi vagy ironikus? Hogyan segítik a jelzők a hangulatteremtést?</p>
-                    <div class="bg-slate-50 p-3 rounded-lg text-xs font-mono">
-                        Kiemelt: Vannak-e kulcsszavak, visszatérő szókapcsolatok?
-                    </div>
-                </div>
-                <!-- Értékrend -->
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 hover:shadow-lg transition">
-                    <h4 class="font-bold text-amber-600 mb-3 flex items-center">⚖️ Értékrend és üzenet</h4>
-                    <p class="text-sm text-slate-600 mb-4">Milyen ellentétek (pl. élet-halál, igazság-hazugság) feszülnek a mélyben?</p>
-                    <div class="bg-slate-50 p-3 rounded-lg text-xs font-mono">
-                        Lényeg: Mi az általános emberi tanulság, amit a novella sugall?
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 4. SZEKCIÓ: FOGALOMTÁR (Interaktív) -->
-        <section id="vocab" class="bg-slate-900 text-white rounded-3xl p-10 space-y-8">
-            <div class="text-center">
-                <h2 class="text-3xl font-bold">Mesterfogalmak</h2>
-                <p class="text-slate-400">Használd ezeket a szavakat, hogy emeld a dolgozatod színvonalát!</p>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="space-y-2 group">
-                    <h5 class="text-amber-400 font-bold uppercase tracking-widest text-xs">A vizuális jel</h5>
-                    <h4 class="text-xl font-bold">Szimbólum</h4>
-                    <p class="text-slate-400 text-sm">Gondolati tartalom érzéki jele. Pl. madár = lélek; fehér szín = tisztaság.</p>
-                </div>
-                <div class="space-y-2 group">
-                    <h5 class="text-amber-400 font-bold uppercase tracking-widest text-xs">Az ismétlődő elem</h5>
-                    <h4 class="text-xl font-bold">Motívum</h4>
-                    <p class="text-slate-400 text-sm">Visszatérő nyelvi forma vagy jelentésegység, amely pluszjelentést kap a műben.</p>
-                </div>
-                <div class="space-y-2 group">
-                    <h5 class="text-amber-400 font-bold uppercase tracking-widest text-xs">Az állandó kép</h5>
-                    <h4 class="text-xl font-bold">Toposz</h4>
-                    <p class="text-slate-400 text-sm">Közismert vándormotívum, melynek jelentése korokon át állandó (pl. ősz = elmúlás).</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- 5. SZEKCIÓ: TILTÓLISTA (CHECKLIST) -->
-        <section class="max-w-2xl mx-auto border-t border-slate-200 pt-12">
-            <h3 class="text-2xl font-bold text-center mb-8">Amit mindenképpen KERÜLJ EL 🚫</h3>
-            <div class="space-y-4">
-                <div class="flex items-start space-x-3 p-4 bg-red-50 rounded-xl">
-                    <span class="text-red-500 font-bold">✖</span>
-                    <p class="text-sm"><strong>Ne írj életrajzot!</strong> A szerzőről csak annyit írj, amennyi szorosan a műhöz tartozik.</p>
-                </div>
-                <div class="flex items-start space-x-3 p-4 bg-red-50 rounded-xl">
-                    <span class="text-red-500 font-bold">✖</span>
-                    <p class="text-sm"><strong>Ne meséld el a cselekményt!</strong> Az olvasó ismeri a művet, ne tartalomismertetést írj, hanem elemzést!</p>
-                </div>
-                <div class="flex items-start space-x-3 p-4 bg-red-50 rounded-xl">
-                    <span class="text-red-500 font-bold">✖</span>
-                    <p class="text-sm"><strong>Kerüld az "E szerintem" formulát!</strong> Használj $T/1$-et vagy írj "az olvasóról".</p>
-                </div>
-                <div class="flex items-start space-x-3 p-4 bg-red-50 rounded-xl">
-                    <span class="text-red-500 font-bold">✖</span>
-                    <p class="text-sm"><strong>Ne firkálj!</strong> Ügyelj a tiszta írásképre és a helyesírásra (használj szótárt!).</p>
-                </div>
-            </div>
+            <!-- Dekoratív elem -->
+            <div class="absolute -bottom-20 -right-20 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl"></div>
         </section>
 
     </main>
 
-    <footer class="bg-white border-t border-slate-200 py-12 text-center text-slate-500 text-sm">
-        <p>© 2024 Novellaelemzés Érettségi Segédanyag - Szakmai források alapján</p>
+    <footer class="bg-slate-50 border-t border-slate-200 py-16 text-center">
+        <div class="max-w-7xl mx-auto px-4">
+            <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-4">Szakmai források</p>
+            <div class="flex flex-wrap justify-center gap-8 text-[10px] text-slate-500 font-bold uppercase opacity-60">
+                <span>onlinetanulok.hu</span>
+                <span>Antalné - Keisz - Raátz</span>
+                <span>Mozaikos Szakmódszertan</span>
+            </div>
+            <p class="mt-10 text-slate-300 text-[10px]">© 2024 Érettségi Mesterkurzus App - Minden jog fenntartva.</p>
+        </div>
     </footer>
 
     <script>
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobileMenu');
-            menu.classList.toggle('hidden');
-        }
-
-        const tabData = {
-            intro: {
-                title: "Bevezetés: A kezdőrúgás",
-                items: [
-                    "<strong>Szerző és cím:</strong> Az első mondatban szerepeljenek!",
-                    "<strong>Alapprobléma:</strong> Miről szól a mű? Mi a központi kérdés?",
-                    "<strong>Korszak/Típus:</strong> Hol helyezkedik el az irodalomtörténetben?",
-                    "<strong>Címértelmezés:</strong> Mire utal a cím? Metaforikus vagy konkrét?"
-                ]
-            },
-            body: {
-                title: "Tárgyalás: A kifejtés",
-                items: [
-                    "<strong>Logikus bekezdések:</strong> Bekezdésenként egy-egy szempont (tér-idő, szereplők stb.).",
-                    "<strong>Állítás és bizonyítás:</strong> Soha ne állíts valamit idézet vagy szöveges hivatkozás nélkül!",
-                    "<strong>Nyelvi igényesség:</strong> Kerüld a szlenget, használd a szakszavakat (motívum, narráció).",
-                    "<strong>Folyamatosság:</strong> Használj kötőszavakat a bekezdések összekötéséhez."
-                ]
-            },
-            conclusion: {
-                title: "Befejezés: Az összegzés",
-                items: [
-                    "<strong>Összegzés:</strong> Ismételd meg a fő üzenetet új szavakkal.",
-                    "<strong>Hatástörténet:</strong> Hogyan illeszkedik a mű az író életművébe?",
-                    "<strong>Saját (tárgyilagos) vélemény:</strong> Esztétikai értékítélet vagy állásfoglalás a problémáról.",
-                    "<strong>Keretes szerkezet:</strong> Csatlakozz vissza a bevezetésben feltett kérdéshez."
-                ]
-            }
-        };
-
-        function showTab(tabId) {
-            const btns = document.querySelectorAll('.tab-btn');
-            btns.forEach(btn => btn.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-
-            const content = document.getElementById('tabContent');
-            const data = tabData[tabId];
-            
-            let listHtml = `<h3 class="text-xl font-bold mb-4 text-amber-700 underline decoration-amber-200">${data.title}</h3>`;
-            listHtml += `<ul class="space-y-4 text-slate-700">`;
-            data.items.forEach(item => {
-                listHtml += `<li>● ${item}</li>`;
-            });
-            listHtml += `</ul>`;
-            
-            content.innerHTML = listHtml;
-        }
-
-        // Radar Chart Inicializálás
-        let balanceChart;
+        // Chart inicializálása
+        let qualityRadar;
         function initChart() {
-            const ctx = document.getElementById('balanceChart').getContext('2d');
-            balanceChart = new Chart(ctx, {
+            const ctx = document.getElementById('qualityRadar').getContext('2d');
+            qualityRadar = new Chart(ctx, {
                 type: 'radar',
                 data: {
-                    labels: ['Cselekmény', 'Szereplők', 'Stílus', 'Szerkezet', 'Üzenet', 'Narráció'],
+                    labels: ['Cselekményvázolás', 'Jellemábrázolás', 'Szerkezeti elemzés', 'Stilisztika', 'Szimbolika', 'Szubjektív vélemény'],
                     datasets: [{
-                        label: 'Egyensúlyi Elemzés',
-                        data: [20, 20, 20, 20, 20, 20],
-                        fill: true,
+                        label: 'Átlagos Dolgozat',
+                        data: [95, 30, 25, 20, 15, 60],
+                        backgroundColor: 'rgba(148, 163, 184, 0.2)',
+                        borderColor: '#94a3b8',
+                        borderWidth: 1,
+                        pointRadius: 0
+                    }, {
+                        label: 'Érettségi Mester-szint',
+                        data: [15, 85, 90, 80, 95, 10],
                         backgroundColor: 'rgba(217, 119, 6, 0.2)',
-                        borderColor: 'rgb(217, 119, 6)',
-                        pointBackgroundColor: 'rgb(217, 119, 6)',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgb(217, 119, 6)'
+                        borderColor: '#d97706',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#d97706'
                     }]
                 },
                 options: {
@@ -341,7 +355,8 @@
                             angleLines: { display: false },
                             suggestedMin: 0,
                             suggestedMax: 100,
-                            ticks: { display: false }
+                            ticks: { display: false },
+                            grid: { color: '#e2e8f0' }
                         }
                     },
                     plugins: {
@@ -351,26 +366,94 @@
             });
         }
 
-        function updateChart(step) {
-            const status = document.getElementById('chartStatus');
-            if(step === 'step1') {
-                balanceChart.data.datasets[0].data = [80, 20, 10, 10, 10, 10];
-                status.innerText = "Olvasás fázis: A cselekmény megértése a legfontosabb, de már keresd a részleteket!";
-            } else if(step === 'step2') {
-                balanceChart.data.datasets[0].data = [50, 60, 40, 40, 30, 40];
-                status.innerText = "Gondolattérkép: Kezdenek összeállni a szereplők és a környezet összefüggései.";
-            } else if(step === 'step3') {
-                balanceChart.data.datasets[0].data = [40, 50, 50, 80, 60, 50];
-                status.innerText = "Vázlatépítés: A szerkezet és a logika kerül előtérbe.";
-            } else if(step === 'step4') {
-                balanceChart.data.datasets[0].data = [70, 80, 90, 85, 95, 80];
-                status.innerText = "Kidolgozás: Teljes egyensúly minden szempont között. Ez a 100%-os elemzés!";
+        function updateRadar(plot, analysis) {
+            qualityRadar.data.datasets[1].data = [plot, analysis, analysis - 5, analysis - 10, analysis + 5, 10];
+            qualityRadar.update();
+        }
+
+        // Szekció váltás
+        function showSection(id) {
+            document.querySelectorAll('.section-content').forEach(s => s.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Szerkezet adatok (Szigorúan forrás alapján)
+        const structData = [
+            {
+                num: "01",
+                title: "I. Bevezetés: A kezdőlökés",
+                content: `
+                    <p class="text-slate-600 mb-6 font-serif italic">"Az első mondatban szerepeljen a novella szerzője és a címe!"</p>
+                    <ul class="space-y-4 text-sm text-slate-700">
+                        <li class="flex items-start"><span class="text-amber-600 font-bold mr-3">▸</span><span><strong>Adatok:</strong> Szerző, cím, esetleg korszak.</span></li>
+                        <li class="flex items-start"><span class="text-amber-600 font-bold mr-3">▸</span><span><strong>Alapprobléma:</strong> Utalj az elbeszélés központi kérdésére.</span></li>
+                        <li class="flex items-start"><span class="text-amber-600 font-bold mr-3">▸</span><span><strong>Cím:</strong> Mit tudhatunk meg belőle? Metaforikus jelentésű?</span></li>
+                    </ul>
+                    <div class="mt-8 p-4 bg-blue-50 rounded-xl text-xs text-blue-900 border-l-4 border-blue-900">
+                        <strong>Tipp:</strong> A feladat szövege gyakran segít a bevezetés megfogalmazásában!
+                    </div>
+                `
+            },
+            {
+                num: "02",
+                title: "II. Tárgyalás: A mélyfúrás",
+                content: `
+                    <p class="text-slate-600 mb-6 font-serif italic">"A tárgyalás legalább 4-5 bekezdésből álljon! Minden gondolatváltás bekezdésváltás."</p>
+                    <ul class="space-y-4 text-sm text-slate-700">
+                        <li class="flex items-start"><span class="text-amber-600 font-bold mr-3">▸</span><span><strong>Szerkezet:</strong> Alaphelyzet, bonyodalom, kibontakozás, tetőpont.</span></li>
+                        <li class="flex items-start"><span class="text-amber-600 font-bold mr-3">▸</span><span><strong>Tér-Idő:</strong> Mikor és hol játszódik? Van-e szimbolikája?</span></li>
+                        <li class="flex items-start"><span class="text-amber-600 font-bold mr-3">▸</span><span><strong>Szereplők:</strong> Motivációk, jellemzési módok (direkt/indirekt).</span></li>
+                        <li class="flex items-start"><span class="text-amber-600 font-bold mr-3">▸</span><span><strong>Bizonyítás:</strong> Idézetekkel támaszd alá az állításaidat!</span></li>
+                    </ul>
+                `
+            },
+            {
+                num: "03",
+                title: "III. Befejezés: Az összegzés",
+                content: `
+                    <p class="text-slate-600 mb-6 font-serif italic">"Egyetlen 2-3 mondatos bekezdés elég lesz."</p>
+                    <ul class="space-y-4 text-sm text-slate-700">
+                        <li class="flex items-start"><span class="text-amber-600 font-bold mr-3">▸</span><span><strong>Zárlat elemzése:</strong> Megoldást jelent-e a befejezés?</span></li>
+                        <li class="flex items-start"><span class="text-amber-600 font-bold mr-3">▸</span><span><strong>Összegzés:</strong> Ismételd meg a fő mondanivalót.</span></li>
+                        <li class="flex items-start"><span class="text-amber-600 font-bold mr-3">▸</span><span><strong>Kitekintés:</strong> Hogyan illeszkedik az író életművébe?</span></li>
+                    </ul>
+                    <div class="mt-8 p-4 bg-amber-50 rounded-xl text-xs text-amber-900 border-l-4 border-amber-600">
+                        <strong>Figyelem:</strong> "A saját véleményt nem kell erőltetni, mert banálisan hathat."
+                    </div>
+                `
             }
-            balanceChart.update();
+        ];
+
+        function setStruct(index) {
+            const data = structData[index];
+            const display = document.getElementById('struct-display');
+            
+            // Aktív gomb stílusa
+            document.querySelectorAll('.struct-tab').forEach(b => {
+                b.classList.remove('border-blue-900', 'bg-blue-50', 'text-blue-900');
+                b.querySelector('span').classList.remove('text-blue-900');
+            });
+            const activeBtn = document.getElementById('sb-' + index);
+            activeBtn.classList.add('border-blue-900', 'bg-blue-50', 'text-blue-900');
+            activeBtn.querySelector('span').classList.add('text-blue-900');
+
+            display.innerHTML = `
+                <div class="animate-slide">
+                    <h3 class="text-3xl font-black text-blue-900 mb-6">${data.title}</h3>
+                    ${data.content}
+                    <div class="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
+                        <span class="text-[10rem] font-black text-blue-900">${data.num}</span>
+                    </div>
+                </div>
+            `;
         }
 
         window.onload = function() {
             initChart();
+            setStruct(0);
         }
     </script>
 </body>
